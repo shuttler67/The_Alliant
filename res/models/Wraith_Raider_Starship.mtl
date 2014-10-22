@@ -18,7 +18,7 @@ Km 0
 
 newmtl material_1_cockpit
 d 1
-Ns 1
+Ns 0.5
 Ni 0
 Ka 0 0 0
 Kd 1 1 1

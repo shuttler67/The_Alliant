@@ -33,6 +33,7 @@ public class OBJLoader {
 
                 String materialLine;
                 String parseMaterialName = "";
+                int textureIndex = 0;
 
                 Model.Material parseMaterial = new Model.Material();
 
@@ -68,6 +69,7 @@ public class OBJLoader {
 
                     } else if (materialLine.startsWith("map_Kd " )) {
                         parseMaterial.texture = TextureLoader.loadTextureFromFile(f.getParent() + "/" + mtlsplit[1], true);
+                        parseMaterial.textureIndex = textureIndex++;
                     }
                 }
                 materials.put(parseMaterialName, m.getMaterials().size());
@@ -90,23 +92,38 @@ public class OBJLoader {
                 m.name = line.substring(2);
 
             } else if (line.startsWith("f ")) {
-                int[] vertexIndicesArray = new int[split.length-1];
+                int[] vertexIndicesArray = new int[3];
                 int[] textureCoordinateIndicesArray = null;
-                int[] normalIndicesArray = new int[split.length-1];
+                int[] normalIndicesArray = new int[3];
                 if (m.hasTextureCoordinates())
-                    textureCoordinateIndicesArray = new int[split.length];
+                    textureCoordinateIndicesArray = new int[3];
 
-                for (int i = 0; i < split.length-1; ++i) {
-                    vertexIndicesArray[i] = Integer.parseInt(split[i+1].split("/")[0]);
+                for (int i = 2; i < split.length-1; ++i)
+                {
+
+                    vertexIndicesArray[0] = Integer.parseInt(split[1].split("/")[0]);
+                    vertexIndicesArray[1] = Integer.parseInt(split[i].split("/")[0]);
+                    vertexIndicesArray[2] = Integer.parseInt(split[i+1].split("/")[0]);
+
                     if (textureCoordinateIndicesArray != null)
-                        textureCoordinateIndicesArray[i] = Integer.parseInt(split[i+1].split("/")[1]);
+                    {
+                        textureCoordinateIndicesArray[0] = Integer.parseInt(split[1].split("/")[1]);
+                        textureCoordinateIndicesArray[1] = Integer.parseInt(split[i].split("/")[1]);
+                        textureCoordinateIndicesArray[2] = Integer.parseInt(split[i + 1].split("/")[1]);
+                    }
                     if (m.hasNormals())
-                        normalIndicesArray[i] = Integer.parseInt(split[i+1].split("/")[2]);
+                    {
+                        normalIndicesArray[0] = Integer.parseInt(split[1].split("/")[2]);
+                        normalIndicesArray[1] = Integer.parseInt(split[i].split("/")[2]);
+                        normalIndicesArray[2] = Integer.parseInt(split[i + 1].split("/")[2]);
+                    }
                     else
-                        normalIndicesArray[i] = 0;
-                }
+                    {
+                        normalIndicesArray[0] = 0; normalIndicesArray[1] = 0; normalIndicesArray[2] = 0;
+                    }
 
-                m.getFaces().add(new Model.Face(vertexIndicesArray, normalIndicesArray, textureCoordinateIndicesArray, currentMaterial));
+                    m.getFaces().add(new Model.Face(vertexIndicesArray, normalIndicesArray, textureCoordinateIndicesArray, currentMaterial));
+                }
 
             } else if(line.startsWith("s ")) {
                 m.setSmoothShadingEnabled(!line.contains("off"));

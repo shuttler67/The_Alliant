@@ -87,7 +87,7 @@ public class GLMatrix
 
     public static void loadOrthogonalMatrix(float left, float right, float bottom, float top)
     {
-        loadOrthogonalMatrix(left, right, top, bottom, 0f, 1f);
+        loadOrthogonalMatrix(left, right, top, bottom, 0f, 10f);
     }
 
     public static void loadPerspectiveMatrix(float fovy, float aspect, float zNear, float zFar)

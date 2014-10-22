@@ -10,9 +10,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL20.glGetUniformLocation;
-import static org.lwjgl.opengl.GL20.glUniform1i;
-import static org.lwjgl.opengl.GL20.glUniform3;
+import static org.lwjgl.opengl.GL20.*;
 
 public class RenderGlobal implements Renderable
 {
@@ -36,6 +34,7 @@ public class RenderGlobal implements Renderable
 
     public void sendLightsToShader(int shader)
     {
+        glUseProgram(shader);
         int ambient = glGetUniformLocation(shader, "lightAmbient"); //Eventually make string not so hard coded with Shader class
 
         glUniform3(ambient, ambientLight);
@@ -45,11 +44,14 @@ public class RenderGlobal implements Renderable
         {
             lights.get(i).sendDataToShader(shader, "lights[" + i + "]");
         }
+        glUseProgram(0);
     }
 
     @Override
     public void render() {
         sendLightsToShader(Shaders.VBO_TEXTURED_PHONG_LIGHTING);
+        glUseProgram(Shaders.VBO_TEXTURED_PHONG_LIGHTING);
+
         for (Renderable r : renderers)
         {
             r.render();

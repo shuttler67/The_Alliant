@@ -71,8 +71,6 @@ public class Alliant {
         glEnable(GL_TEXTURE_2D);
         glEnable(GL_BLEND);
         glEnable(GL_ALPHA_TEST);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
@@ -83,7 +81,7 @@ public class Alliant {
         GLMatrix.setMatrixMode(GLMatrixMode.MODELVIEW);
 
         try {
-            testModel = OBJLoader.loadTexturedModel(new File("res/models/Wraith Raider Starship.obj"));
+            testModel = OBJLoader.loadTexturedModel(new File("res/models/Federation Interceptor HN48 landed.obj"));
         } catch (Exception e) {
             e.printStackTrace();
             shutdownTheAlliant();

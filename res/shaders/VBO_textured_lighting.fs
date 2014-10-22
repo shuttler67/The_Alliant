@@ -9,9 +9,10 @@ struct Material {
 	vec4 diffuseColor;
 	vec3 ambientColor;
 	vec3 specularColor;
+	int textureIndex;
 };
 
-const Material defaultMaterial = Material(1.0, vec4(1, 1, 1, 1), vec3(0.1, 0.1, 0.1), vec3(1, 1, 1));
+const Material defaultMaterial = Material(1.0, vec4(1, 1, 1, 1), vec3(0.1, 0.1, 0.1), vec3(1, 1, 1), -1);
 uniform Material materials[19];
 
 uniform vec3 lightAmbient;
@@ -30,24 +31,10 @@ smooth in vec3 fragVert;
 smooth in vec3 fragNormal;
 smooth in vec2 fragTexCoord;
 flat in int fragMaterialIndex;
-flat in int fragTextureIndex;
 
 out vec4 finalColor;
 
 void main() {
-
-	vec4 texColor = vec4(1, 1, 1, 1);
-	switch (fragTextureIndex) {
-		case 0: texColor = texture2D( textures[0], fragTexCoord); break;
-		case 1: texColor = texture2D( textures[1], fragTexCoord); break;
-		case 2: texColor = texture2D( textures[2], fragTexCoord); break;
-		case 3: texColor = texture2D( textures[3], fragTexCoord); break;
-		case 4: texColor = texture2D( textures[4], fragTexCoord); break;
-		case 5: texColor = texture2D( textures[5], fragTexCoord); break;
-		case 6: texColor = texture2D( textures[6], fragTexCoord); break;
-		case 7: texColor = texture2D( textures[7], fragTexCoord); break;
-		case 8: texColor = texture2D( textures[8], fragTexCoord); break;
-	}
 
     Material material = defaultMaterial;
     switch (fragMaterialIndex) {
@@ -70,6 +57,19 @@ void main() {
 		case 16: material = materials[16]; break;
 		case 17: material = materials[17]; break;
 		case 18: material = materials[18]; break;
+	}
+	
+	vec4 texColor = vec4(1, 1, 1, 1);
+	switch (material.textureIndex) {
+		case 0: texColor = texture2D( textures[0], fragTexCoord); break;
+		case 1: texColor = texture2D( textures[1], fragTexCoord); break;
+		case 2: texColor = texture2D( textures[2], fragTexCoord); break;
+		case 3: texColor = texture2D( textures[3], fragTexCoord); break;
+		case 4: texColor = texture2D( textures[4], fragTexCoord); break;
+		case 5: texColor = texture2D( textures[5], fragTexCoord); break;
+		case 6: texColor = texture2D( textures[6], fragTexCoord); break;
+		case 7: texColor = texture2D( textures[7], fragTexCoord); break;
+		case 8: texColor = texture2D( textures[8], fragTexCoord); break;
 	}
     
 	vec4 surfaceColor = texColor * material.diffuseColor;// * material.diffuseColor; 
@@ -100,12 +100,12 @@ void main() {
 		
 		float specularCoefficient = 0.0;
 		if (diffuseCoefficient > 0.0) {
-			specularCoefficient = pow(clamp(dot(fragNormal, reflect(-lightDirection, fragNormal) ) , 0.0, 1.0), material.shininess);
+			specularCoefficient = clamp(pow(dot(fragNormal, reflect(-lightDirection, fragNormal) ) , material.shininess) , 0.0, 1.0);
 		}
 		specular *= light.color * specularCoefficient; //* attenuation;
 	}
 
-	vec3 ambient = lightAmbient * material.ambientColor; //
+	vec3 ambient = lightAmbient * material.ambientColor;
 	
-	finalColor = vec4(diffuse + ambient + specular, surfaceColor.a); // + ambient + specular
+	finalColor = vec4(diffuse  + ambient, surfaceColor.a);
 }
